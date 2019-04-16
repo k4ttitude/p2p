@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "core-logger": "^0.1.4",
     "express": "^4.16.4",
     "socket.io": "^2.2.0",
     "socket.io-client": "^2.2.0",

@@ -58,6 +58,16 @@ $(document).ready(() => {
         socket.emit('go-private', { username: username, friendId: friendId });
         // goPrivate();
     });
+
+    $('#create-room').click(() => {
+        let roomId = $('#roomId').val();
+        socket.emit('create-room', roomId);
+    });
+
+    $('#join-room').click(() => {
+        let roomId = $('#roomId').val();
+        socket.emit('join-room', roomId);
+    });    
 });
 
 function goPrivate() {
