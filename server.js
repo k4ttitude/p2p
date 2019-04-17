@@ -24,9 +24,9 @@ const maxRoomClients = 5;
 io.on('connection', socket => {
 
     socket.on('create-room', roomId => {
-        logger.info('createdRoom', { roomId: roomId });
-        p2pserver(socket, {}, { name: roomId });
-        socket.emit('createdRoom', {roomId: roomId});
+        socket.join(roomId);
+        socket.emit('joined-room', roomId);
+        console.log(`created room ${roomId}`);
     });
 
     socket.on('join-room', roomId => {
@@ -38,8 +38,8 @@ io.on('connection', socket => {
                 logger.info('room is full', { userId: socket.id, roomId: roomId });
                 socket.emit('full-room');
             } else {
-                socket.join(room);
-                p2pserver(socket, null, { name: roomId });
+                socket.join(roomId);
+                socket.emit('joined-room', roomId);
                 logger.info('room joined', {
                     userId: socket.id,
                     roomId: roomId,
@@ -51,16 +51,14 @@ io.on('connection', socket => {
         }
     });
 
-    socket.on('peer-msg', data => {
-        // socket.broadcast.emit('message', { username: data.username, message: data.message });
-        io.emit('peer-msg', { username: data.username, message: data.message });
-        console.log(`${data.username} says: "${data.message}"`);
-    });
-
-    socket.on('go-private', data => {
-        io.emit('go-private', { to: data.friendId, from: data.username });
-        // socket.broadcast.emit('go-private', { to: data.friendId, from: data.username });
-        console.log(`${data.friendId} & ${data.username} went private`);
+    socket.on('message', data => {
+        if (data.roomId && data.roomId != '') {
+            io.to(data.roomId).emit('message', { username: data.username, message: data.message });
+        } else {
+            // socket.broadcast.emit('message', { username: data.username, message: data.message });
+            io.emit('message', { username: data.username, message: data.message });
+            console.log(`${data.username} says: "${data.message}"`);
+        }
     });
 });
 
